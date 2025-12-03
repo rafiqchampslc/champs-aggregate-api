@@ -73,5 +73,23 @@ namespace Champs.Api.Controllers
             return Ok(await _repo.GetPopulationSummaryTrendAsync(siteId));
         }
 
+        [HttpGet("marital-status-change-trend")]
+        public async Task<ActionResult<IEnumerable<MaritalStatusChangeTrendRow>>> GetMaritalStatusChangeTrend([FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetMaritalStatusChangeTrendAsync(siteId));
+        }
+        [HttpGet("marriage-age-distribution-trend")]
+        public async Task<ActionResult<IEnumerable<MarriageAgeDistributionTrendRow>>> GetMarriageAgeDistributionTrend([FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetMarriageAgeDistributionTrendAsync(siteId));
+        }
+
+        [HttpGet("birth-outcome-pregnancy-trend")]
+        public async Task<ActionResult<IEnumerable<BirthOutcomePregnancyTrendRow>>> GetBirthOutcomePregnancyTrend([FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetBirthOutcomePregnancyTrendAsync(siteId));
+        }
+
+
     }
 }

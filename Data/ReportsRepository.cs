@@ -15,6 +15,9 @@ namespace Champs.Api.Data
         Task<List<HouseholdSizeRow>> GetHouseholdSizeTrendAsync(int siteId);
         Task<List<MigrationTrendRow>> GetMigrationTrendAsync(int siteId);
         Task<List<PopulationSummaryTrendRow>> GetPopulationSummaryTrendAsync(int siteId);
+        Task<List<MaritalStatusChangeTrendRow>> GetMaritalStatusChangeTrendAsync(int siteId);
+        Task<List<MarriageAgeDistributionTrendRow>> GetMarriageAgeDistributionTrendAsync(int siteId);
+        Task<List<BirthOutcomePregnancyTrendRow>> GetBirthOutcomePregnancyTrendAsync(int siteId);
     }
 
     public class ReportsRepository : IReportsRepository
@@ -235,6 +238,93 @@ namespace Champs.Api.Data
 
             return result;
         }
+
+        public async Task<List<MaritalStatusChangeTrendRow>> GetMaritalStatusChangeTrendAsync(int siteId)
+        {
+            var result = new List<MaritalStatusChangeTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetMaritalStatusChangeTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var total = reader.GetDecimal(reader.GetOrdinal("TotalMSChanges"));
+                var div = reader.GetDecimal(reader.GetOrdinal("Divorces"));
+                var sep = reader.GetDecimal(reader.GetOrdinal("Separations"));
+                var wid = reader.GetDecimal(reader.GetOrdinal("WidowsWidowers"));
+                var reu = reader.GetDecimal(reader.GetOrdinal("Reunions"));
+
+                result.Add(new MaritalStatusChangeTrendRow(year, total, div, sep, wid, reu));
+            }
+
+            return result;
+        }
+
+        public async Task<List<MarriageAgeDistributionTrendRow>> GetMarriageAgeDistributionTrendAsync(int siteId)
+        {
+            var result = new List<MarriageAgeDistributionTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetMarriageAgeDistributionTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var mU18 = reader.GetDecimal(reader.GetOrdinal("MaleUnder18"));
+                var m18_25 = reader.GetDecimal(reader.GetOrdinal("Male18To25"));
+                var m25_35 = reader.GetDecimal(reader.GetOrdinal("Male25To35"));
+                var m35Plus = reader.GetDecimal(reader.GetOrdinal("Male35Plus"));
+                var fU18 = reader.GetDecimal(reader.GetOrdinal("FemaleUnder18"));
+                var f18_25 = reader.GetDecimal(reader.GetOrdinal("Female18To25"));
+                var f25_35 = reader.GetDecimal(reader.GetOrdinal("Female25To35"));
+                var f35Plus = reader.GetDecimal(reader.GetOrdinal("Female35Plus"));
+
+                result.Add(new MarriageAgeDistributionTrendRow(
+                    year, mU18, m18_25, m25_35, m35Plus, fU18, f18_25, f25_35, f35Plus));
+            }
+
+            return result;
+        }
+
+        public async Task<List<BirthOutcomePregnancyTrendRow>> GetBirthOutcomePregnancyTrendAsync(int siteId)
+        {
+            var result = new List<BirthOutcomePregnancyTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetBirthOutcomePregnancyTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var live = reader.GetDecimal(reader.GetOrdinal("LiveBirths"));
+                var still = reader.GetDecimal(reader.GetOrdinal("StillBirths"));
+                var abort = reader.GetDecimal(reader.GetOrdinal("AbortionsMiscarriages"));
+                var preg = reader.GetDecimal(reader.GetOrdinal("CurrentlyPregnant"));
+                var total = reader.GetDecimal(reader.GetOrdinal("TotalOutcome"));
+
+                result.Add(new BirthOutcomePregnancyTrendRow(
+                    year, live, still, abort, preg, total));
+            }
+
+            return result;
+        }
+
 
     }
 }
