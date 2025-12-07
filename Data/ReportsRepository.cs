@@ -18,6 +18,10 @@ namespace Champs.Api.Data
         Task<List<MaritalStatusChangeTrendRow>> GetMaritalStatusChangeTrendAsync(int siteId);
         Task<List<MarriageAgeDistributionTrendRow>> GetMarriageAgeDistributionTrendAsync(int siteId);
         Task<List<BirthOutcomePregnancyTrendRow>> GetBirthOutcomePregnancyTrendAsync(int siteId);
+        Task<List<BirthsByMotherAgeTrendRow>> GetBirthsByMotherAgeTrendAsync(int siteId);
+        Task<List<BirthPlaceOutcomeByYearRow>> GetBirthPlaceOutcomeByYearAsync(int siteId);
+        Task<List<BirthDeathTrendRow>> GetBirthDeathTrendAsync(int siteId);
+        Task<List<ChildDeathsAndStillbirthsTrendRow>> GetChildDeathsAndStillbirthsTrendAsync(int siteId);
     }
 
     public class ReportsRepository : IReportsRepository
@@ -324,7 +328,119 @@ namespace Champs.Api.Data
 
             return result;
         }
+        public async Task<List<BirthsByMotherAgeTrendRow>> GetBirthsByMotherAgeTrendAsync(int siteId)
+        {
+            var result = new List<BirthsByMotherAgeTrendRow>();
 
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetBirthsByMotherAgeTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var b10_14 = reader.GetDecimal(reader.GetOrdinal("Births10_14"));
+                var b15_19 = reader.GetDecimal(reader.GetOrdinal("Births15_19"));
+                var b20_24 = reader.GetDecimal(reader.GetOrdinal("Births20_24"));
+                var b25_29 = reader.GetDecimal(reader.GetOrdinal("Births25_29"));
+                var b30_34 = reader.GetDecimal(reader.GetOrdinal("Births30_34"));
+                var b35_39 = reader.GetDecimal(reader.GetOrdinal("Births35_39"));
+                var b40_44 = reader.GetDecimal(reader.GetOrdinal("Births40_44"));
+                var b45_49 = reader.GetDecimal(reader.GetOrdinal("Births45_49"));
+
+                result.Add(new BirthsByMotherAgeTrendRow(
+                    year, b10_14, b15_19, b20_24, b25_29, b30_34, b35_39, b40_44, b45_49));
+            }
+
+            return result;
+        }
+        public async Task<List<BirthPlaceOutcomeByYearRow>> GetBirthPlaceOutcomeByYearAsync(int siteId)
+        {
+            var result = new List<BirthPlaceOutcomeByYearRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetBirthPlaceOutcomeByYear", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var facilityLive = reader.GetDecimal(reader.GetOrdinal("FacilityLiveBirths"));
+                var facilityStill = reader.GetDecimal(reader.GetOrdinal("FacilityStillbirths"));
+                var homeCommLive = reader.GetDecimal(reader.GetOrdinal("HomeLiveBirths"));
+                var homeCommStill = reader.GetDecimal(reader.GetOrdinal("HomeStillbirths"));
+                var unknownLive = reader.GetDecimal(reader.GetOrdinal("UnknownLiveBirths"));
+                var unknownStill = reader.GetDecimal(reader.GetOrdinal("UnknownStillbirths"));
+
+                result.Add(new BirthPlaceOutcomeByYearRow(
+                    year,
+                    facilityLive,
+                    facilityStill,
+                    homeCommLive,
+                    homeCommStill,
+                    unknownLive,
+                    unknownStill
+                ));
+            }
+
+            return result;
+        }
+        public async Task<List<BirthDeathTrendRow>> GetBirthDeathTrendAsync(int siteId)
+        {
+            var result = new List<BirthDeathTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetBirthDeathTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var live = reader.GetDecimal(reader.GetOrdinal("TotalLiveBirths"));
+                var deaths = reader.GetDecimal(reader.GetOrdinal("TotalDeaths"));
+
+                result.Add(new BirthDeathTrendRow(year, live, deaths));
+            }
+
+            return result;
+        }
+        public async Task<List<ChildDeathsAndStillbirthsTrendRow>> GetChildDeathsAndStillbirthsTrendAsync(int siteId)
+        {
+            var result = new List<ChildDeathsAndStillbirthsTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetChildDeathsAndStillbirthsTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var neo = reader.GetDecimal(reader.GetOrdinal("NeonatalDeaths"));
+                var infant = reader.GetDecimal(reader.GetOrdinal("InfantDeaths"));
+                var u5 = reader.GetDecimal(reader.GetOrdinal("Under5Deaths"));
+                var still = reader.GetDecimal(reader.GetOrdinal("Stillbirths"));
+
+                result.Add(new ChildDeathsAndStillbirthsTrendRow(year, neo, infant, u5, still));
+            }
+
+            return result;
+        }
 
     }
 }

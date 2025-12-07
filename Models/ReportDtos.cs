@@ -43,6 +43,42 @@ namespace Champs.Api.Models
         decimal CurrentlyPregnant,
         decimal TotalOutcome
     );
+    public record BirthsByMotherAgeTrendRow(
+    int DataYear,
+    decimal Births10_14,
+    decimal Births15_19,
+    decimal Births20_24,
+    decimal Births25_29,
+    decimal Births30_34,
+    decimal Births35_39,
+    decimal Births40_44,
+    decimal Births45_49
+);
+    public record BirthPlaceOutcomeByYearRow(
+    int DataYear,
+    decimal FacilityLive,
+    decimal FacilityStill,
+    decimal HomeCommLive,
+    decimal HomeCommStill,
+    decimal UnknownLive,
+    decimal UnknownStill
+);
+
+    public record BirthDeathTrendRow(
+        int DataYear,
+        decimal TotalLiveBirths,
+        decimal TotalDeaths
+    );
+
+    public record ChildDeathsAndStillbirthsTrendRow(
+        int DataYear,
+        decimal NeonatalDeaths,
+        decimal InfantDeaths,
+        decimal Under5Deaths,
+        decimal Stillbirths
+    );
+
+
 
 
 }

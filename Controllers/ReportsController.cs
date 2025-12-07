@@ -90,6 +90,33 @@ namespace Champs.Api.Controllers
             return Ok(await _repo.GetBirthOutcomePregnancyTrendAsync(siteId));
         }
 
+        [HttpGet("births-by-mother-age-trend")]
+        public async Task<ActionResult<IEnumerable<BirthsByMotherAgeTrendRow>>> GetBirthsByMotherAgeTrend([FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetBirthsByMotherAgeTrendAsync(siteId));
+        }
+
+        [HttpGet("birth-place-outcome-by-year")]
+        public async Task<ActionResult<IEnumerable<BirthPlaceOutcomeByYearRow>>> GetBirthPlaceOutcomeByYear(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetBirthPlaceOutcomeByYearAsync(siteId));
+        }
+
+        [HttpGet("birth-death-trend")]
+        public async Task<ActionResult<IEnumerable<BirthDeathTrendRow>>> GetBirthDeathTrend(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetBirthDeathTrendAsync(siteId));
+        }
+
+        [HttpGet("child-deaths-stillbirths-trend")]
+        public async Task<ActionResult<IEnumerable<ChildDeathsAndStillbirthsTrendRow>>> GetChildDeathsAndStillbirthsTrend(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetChildDeathsAndStillbirthsTrendAsync(siteId));
+        }
+
 
     }
 }
