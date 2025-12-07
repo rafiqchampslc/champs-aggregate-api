@@ -22,6 +22,8 @@ namespace Champs.Api.Data
         Task<List<BirthPlaceOutcomeByYearRow>> GetBirthPlaceOutcomeByYearAsync(int siteId);
         Task<List<BirthDeathTrendRow>> GetBirthDeathTrendAsync(int siteId);
         Task<List<ChildDeathsAndStillbirthsTrendRow>> GetChildDeathsAndStillbirthsTrendAsync(int siteId);
+        Task<List<Under5DeathAndStillbirthByPlaceRow>> GetUnder5DeathAndStillbirthByPlaceTrendAsync(int siteId);
+        Task<List<MortalityRatesTrendRow>> GetMortalityRatesTrendAsync(int siteId);
     }
 
     public class ReportsRepository : IReportsRepository
@@ -437,6 +439,60 @@ namespace Champs.Api.Data
                 var still = reader.GetDecimal(reader.GetOrdinal("Stillbirths"));
 
                 result.Add(new ChildDeathsAndStillbirthsTrendRow(year, neo, infant, u5, still));
+            }
+
+            return result;
+        }
+        public async Task<List<Under5DeathAndStillbirthByPlaceRow>> GetUnder5DeathAndStillbirthByPlaceTrendAsync(int siteId)
+        {
+            var result = new List<Under5DeathAndStillbirthByPlaceRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetUnder5DeathAndStillbirthByPlaceTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var facilityU5 = reader.GetDecimal(reader.GetOrdinal("FacilityUnder5"));
+                var facilityStill = reader.GetDecimal(reader.GetOrdinal("FacilityStill"));
+                var homeU5 = reader.GetDecimal(reader.GetOrdinal("HomeUnder5"));
+                var homeStill = reader.GetDecimal(reader.GetOrdinal("HomeStill"));
+                var unknownU5 = reader.GetDecimal(reader.GetOrdinal("UnknownUnder5"));
+                var unknownStill = reader.GetDecimal(reader.GetOrdinal("UnknownStill"));
+
+                result.Add(new Under5DeathAndStillbirthByPlaceRow(
+                    year, facilityU5, facilityStill, homeU5, homeStill, unknownU5, unknownStill));
+            }
+
+            return result;
+        }
+        public async Task<List<MortalityRatesTrendRow>> GetMortalityRatesTrendAsync(int siteId)
+        {
+            var result = new List<MortalityRatesTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetMortalityRatesTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var under5Rate = reader.GetDecimal(reader.GetOrdinal("Under5Rate"));
+                var infantRate = reader.GetDecimal(reader.GetOrdinal("InfantRate"));
+                var neonatalRate = reader.GetDecimal(reader.GetOrdinal("NeonatalRate"));
+                var stillbirthRate = reader.GetDecimal(reader.GetOrdinal("StillbirthRatio"));
+
+                result.Add(new MortalityRatesTrendRow(
+                    year, under5Rate, infantRate, neonatalRate, stillbirthRate));
             }
 
             return result;

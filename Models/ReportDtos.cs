@@ -77,7 +77,24 @@ namespace Champs.Api.Models
         decimal Under5Deaths,
         decimal Stillbirths
     );
+    public record Under5DeathAndStillbirthByPlaceRow(
+        int DataYear,
+        decimal FacilityUnder5,
+        decimal FacilityStill,
+        decimal HomeUnder5,
+        decimal HomeStill,
+        decimal UnknownUnder5,
+        decimal UnknownStill
+    );
 
+    // ReportDtos.cs
+    public record MortalityRatesTrendRow(
+        int DataYear,
+        decimal Under5Rate,
+        decimal InfantRate,
+        decimal NeonatalRate,
+        decimal StillbirthRatio
+    );
 
 
 

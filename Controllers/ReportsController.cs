@@ -117,6 +117,19 @@ namespace Champs.Api.Controllers
             return Ok(await _repo.GetChildDeathsAndStillbirthsTrendAsync(siteId));
         }
 
+        [HttpGet("under5-death-stillbirth-place-trend")]
+        public async Task<ActionResult<IEnumerable<Under5DeathAndStillbirthByPlaceRow>>>
+    GetUnder5DeathAndStillbirthByPlaceTrend([FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetUnder5DeathAndStillbirthByPlaceTrendAsync(siteId));
+        }
+        [HttpGet("mortality-rates-trend")]
+        public async Task<ActionResult<IEnumerable<MortalityRatesTrendRow>>> GetMortalityRatesTrend(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetMortalityRatesTrendAsync(siteId));
+        }
+
 
     }
 }
