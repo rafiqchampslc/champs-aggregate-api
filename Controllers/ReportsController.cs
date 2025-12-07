@@ -130,6 +130,13 @@ namespace Champs.Api.Controllers
             return Ok(await _repo.GetMortalityRatesTrendAsync(siteId));
         }
 
+        [HttpGet("population-pyramids-all-years")]
+        public async Task<ActionResult<IEnumerable<PopulationPyramidAllYearsRow>>>
+    GetPopulationPyramidsAllYears([FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetPopulationPyramidsAllYearsAsync(siteId));
+        }
+
 
     }
 }

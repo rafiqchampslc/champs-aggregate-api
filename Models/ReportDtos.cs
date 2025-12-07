@@ -87,7 +87,6 @@ namespace Champs.Api.Models
         decimal UnknownStill
     );
 
-    // ReportDtos.cs
     public record MortalityRatesTrendRow(
         int DataYear,
         decimal Under5Rate,
@@ -95,7 +94,12 @@ namespace Champs.Api.Models
         decimal NeonatalRate,
         decimal StillbirthRatio
     );
-
+    public record PopulationPyramidAllYearsRow(
+        int DataYear,
+        string AgeGroupLabel,
+        decimal MaleCount,
+        decimal FemaleCount
+    );
 
 
 }
