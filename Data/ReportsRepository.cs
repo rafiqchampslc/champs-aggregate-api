@@ -25,6 +25,7 @@ namespace Champs.Api.Data
         Task<List<Under5DeathAndStillbirthByPlaceRow>> GetUnder5DeathAndStillbirthByPlaceTrendAsync(int siteId);
         Task<List<MortalityRatesTrendRow>> GetMortalityRatesTrendAsync(int siteId);
         Task<List<PopulationPyramidAllYearsRow>> GetPopulationPyramidsAllYearsAsync(int siteId);
+        Task<List<Under5ChildPyramidRow>> GetUnder5ChildPyramidsAllYearsAsync(int siteId);
     }
 
     public class ReportsRepository : IReportsRepository
@@ -513,6 +514,32 @@ namespace Champs.Api.Data
             while (await reader.ReadAsync())
             {
                 result.Add(new PopulationPyramidAllYearsRow(
+                    reader.GetInt32(reader.GetOrdinal("DataYear")),
+                    reader.GetString(reader.GetOrdinal("AgeGroupLabel")),
+                    reader.GetDecimal(reader.GetOrdinal("MaleCount")),
+                    reader.GetDecimal(reader.GetOrdinal("FemaleCount"))
+                ));
+            }
+
+            return result;
+        }
+
+        public async Task<List<Under5ChildPyramidRow>>
+    GetUnder5ChildPyramidsAllYearsAsync(int siteId)
+        {
+            var result = new List<Under5ChildPyramidRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetUnder5ChildPyramidsAllYears", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                result.Add(new Under5ChildPyramidRow(
                     reader.GetInt32(reader.GetOrdinal("DataYear")),
                     reader.GetString(reader.GetOrdinal("AgeGroupLabel")),
                     reader.GetDecimal(reader.GetOrdinal("MaleCount")),

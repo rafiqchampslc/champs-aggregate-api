@@ -100,6 +100,12 @@ namespace Champs.Api.Models
         decimal MaleCount,
         decimal FemaleCount
     );
+    public record Under5ChildPyramidRow(
+        int DataYear,
+        string AgeGroupLabel,
+        decimal MaleCount,
+        decimal FemaleCount
+    );
 
 
 }

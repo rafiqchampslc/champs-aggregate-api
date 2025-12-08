@@ -137,6 +137,13 @@ namespace Champs.Api.Controllers
             return Ok(await _repo.GetPopulationPyramidsAllYearsAsync(siteId));
         }
 
+        [HttpGet("under5-child-pyramids-all-years")]
+        public async Task<ActionResult<IEnumerable<Under5ChildPyramidRow>>>
+    GetUnder5ChildPyramidsAllYears([FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetUnder5ChildPyramidsAllYearsAsync(siteId));
+        }
+
 
     }
 }
