@@ -144,6 +144,13 @@ namespace Champs.Api.Controllers
             return Ok(await _repo.GetUnder5ChildPyramidsAllYearsAsync(siteId));
         }
 
+        [HttpGet("migration-rates-per-thousand")]
+        public async Task<ActionResult<IEnumerable<MigrationRatesPerThousandTrendRow>>> GetMigrationRatesPerThousandTrend(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetMigrationRatesPerThousandTrendAsync(siteId));
+        }
+
 
     }
 }

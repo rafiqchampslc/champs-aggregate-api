@@ -98,7 +98,8 @@ namespace Champs.Api.Models
         int DataYear,
         string AgeGroupLabel,
         decimal MaleCount,
-        decimal FemaleCount
+        decimal FemaleCount,
+        decimal HHSize
     );
     public record Under5ChildPyramidRow(
         int DataYear,
@@ -106,6 +107,12 @@ namespace Champs.Api.Models
         decimal MaleCount,
         decimal FemaleCount
     );
+
+    public record MigrationRatesPerThousandTrendRow(
+    int DataYear,
+    decimal InMigrationRatePerThousand,
+    decimal OutMigrationRatePerThousand
+);
 
 
 }

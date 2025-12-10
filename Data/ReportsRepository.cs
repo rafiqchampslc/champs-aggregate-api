@@ -26,6 +26,8 @@ namespace Champs.Api.Data
         Task<List<MortalityRatesTrendRow>> GetMortalityRatesTrendAsync(int siteId);
         Task<List<PopulationPyramidAllYearsRow>> GetPopulationPyramidsAllYearsAsync(int siteId);
         Task<List<Under5ChildPyramidRow>> GetUnder5ChildPyramidsAllYearsAsync(int siteId);
+        Task<List<MigrationRatesPerThousandTrendRow>> GetMigrationRatesPerThousandTrendAsync(int siteId);
+
     }
 
     public class ReportsRepository : IReportsRepository
@@ -517,7 +519,8 @@ namespace Champs.Api.Data
                     reader.GetInt32(reader.GetOrdinal("DataYear")),
                     reader.GetString(reader.GetOrdinal("AgeGroupLabel")),
                     reader.GetDecimal(reader.GetOrdinal("MaleCount")),
-                    reader.GetDecimal(reader.GetOrdinal("FemaleCount"))
+                    reader.GetDecimal(reader.GetOrdinal("FemaleCount")),
+                    reader.GetDecimal(reader.GetOrdinal("HHSize"))
                 ));
             }
 
@@ -550,6 +553,29 @@ namespace Champs.Api.Data
             return result;
         }
 
+        public async Task<List<MigrationRatesPerThousandTrendRow>> GetMigrationRatesPerThousandTrendAsync(int siteId)
+        {
+            var result = new List<MigrationRatesPerThousandTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetMigrationRatesPerThousandTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var inRate = reader.GetDecimal(reader.GetOrdinal("InMigrationRatePerThousand"));
+                var outRate = reader.GetDecimal(reader.GetOrdinal("OutMigrationRatePerThousand"));
+
+                result.Add(new MigrationRatesPerThousandTrendRow(year, inRate, outRate));
+            }
+
+            return result;
+        }
 
     }
 }
