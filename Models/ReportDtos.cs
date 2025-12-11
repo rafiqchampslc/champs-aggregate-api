@@ -113,6 +113,16 @@ namespace Champs.Api.Models
     decimal InMigrationRatePerThousand,
     decimal OutMigrationRatePerThousand
 );
+    public record HouseholdVisitOutcomesTrendRow(
+    int DataYear,
+    decimal TotalHouseholdsInCatchment,
+    decimal HouseholdsVisited,
+    decimal HouseholdsInterviewed,
+    decimal ActiveHouseholds,
+    decimal AbsentHouseholds,
+    decimal RefusedHouseholds
+);
+
 
 
 }

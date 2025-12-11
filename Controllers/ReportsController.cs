@@ -150,6 +150,12 @@ namespace Champs.Api.Controllers
         {
             return Ok(await _repo.GetMigrationRatesPerThousandTrendAsync(siteId));
         }
+        [HttpGet("household-visit-outcomes-trend")]
+        public async Task<ActionResult<IEnumerable<HouseholdVisitOutcomesTrendRow>>> GetHouseholdVisitOutcomesTrend(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetHouseholdVisitOutcomesTrendAsync(siteId));
+        }
 
 
     }

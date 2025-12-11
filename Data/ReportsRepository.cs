@@ -27,6 +27,7 @@ namespace Champs.Api.Data
         Task<List<PopulationPyramidAllYearsRow>> GetPopulationPyramidsAllYearsAsync(int siteId);
         Task<List<Under5ChildPyramidRow>> GetUnder5ChildPyramidsAllYearsAsync(int siteId);
         Task<List<MigrationRatesPerThousandTrendRow>> GetMigrationRatesPerThousandTrendAsync(int siteId);
+        Task<List<HouseholdVisitOutcomesTrendRow>> GetHouseholdVisitOutcomesTrendAsync(int siteId);
 
     }
 
@@ -576,6 +577,35 @@ namespace Champs.Api.Data
 
             return result;
         }
+        public async Task<List<HouseholdVisitOutcomesTrendRow>> GetHouseholdVisitOutcomesTrendAsync(int siteId)
+        {
+            var result = new List<HouseholdVisitOutcomesTrendRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetHouseholdVisitOutcomesTrend", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var total = reader.GetDecimal(reader.GetOrdinal("TotalHouseholdsInCatchment"));
+                var visited = reader.GetDecimal(reader.GetOrdinal("HouseholdsVisited"));
+                var interviewed = reader.GetDecimal(reader.GetOrdinal("HouseholdsInterviewed"));
+                var active = reader.GetDecimal(reader.GetOrdinal("ActiveHouseholds"));
+                var absent = reader.GetDecimal(reader.GetOrdinal("AbsentHouseholds"));
+                var refused = reader.GetDecimal(reader.GetOrdinal("RefusedHouseholds"));
+
+                result.Add(new HouseholdVisitOutcomesTrendRow(
+                    year, total, visited, interviewed, active, absent, refused));
+            }
+
+            return result;
+        }
+
 
     }
 }
