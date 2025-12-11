@@ -122,7 +122,17 @@ namespace Champs.Api.Models
     decimal AbsentHouseholds,
     decimal RefusedHouseholds
 );
-
+    public record SiteAggregatedReportRow(
+           int SiteId,
+           string SiteName,
+           string CountryName,
+           int DataYear,
+           string IndicatorCode,
+           string IndicatorName,
+           string DataType,
+           DateTime? LastEntryDate,
+           decimal IndicatorValue
+       );
 
 
 }

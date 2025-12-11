@@ -156,7 +156,16 @@ namespace Champs.Api.Controllers
         {
             return Ok(await _repo.GetHouseholdVisitOutcomesTrendAsync(siteId));
         }
+        [HttpGet("site-aggregated-report")]
+        public async Task<ActionResult<List<SiteAggregatedReportRow>>> GetSiteAggregatedReport(
+            [FromQuery] int siteId)
+        {
+            if (siteId <= 0)
+                return BadRequest("SiteId is required.");
 
+            var data = await _repo.GetSiteAggregatedReportAsync(siteId);
+            return Ok(data);
+        }
 
     }
 }

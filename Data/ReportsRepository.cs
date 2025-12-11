@@ -28,7 +28,7 @@ namespace Champs.Api.Data
         Task<List<Under5ChildPyramidRow>> GetUnder5ChildPyramidsAllYearsAsync(int siteId);
         Task<List<MigrationRatesPerThousandTrendRow>> GetMigrationRatesPerThousandTrendAsync(int siteId);
         Task<List<HouseholdVisitOutcomesTrendRow>> GetHouseholdVisitOutcomesTrendAsync(int siteId);
-
+        Task<List<SiteAggregatedReportRow>> GetSiteAggregatedReportAsync(int siteId);
     }
 
     public class ReportsRepository : IReportsRepository
@@ -606,6 +606,53 @@ namespace Champs.Api.Data
             return result;
         }
 
+        public async Task<List<SiteAggregatedReportRow>> GetSiteAggregatedReportAsync(int siteId)
+        {
+            var result = new List<SiteAggregatedReportRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetSiteAggregatedHdssReport", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var siteIdVal = reader.GetInt32(reader.GetOrdinal("SiteID"));
+                var siteName = reader.GetString(reader.GetOrdinal("SiteName"));
+                var countryName = reader.GetString(reader.GetOrdinal("CountryName"));
+                var year = reader.GetInt32(reader.GetOrdinal("DataYear"));
+                var indicatorCode = reader.GetString(reader.GetOrdinal("IndicatorCode"));
+                var indicatorName = reader.GetString(reader.GetOrdinal("IndicatorName"));
+                var dataType = reader.IsDBNull(reader.GetOrdinal("DataType"))
+                                    ? string.Empty
+                                    : reader.GetString(reader.GetOrdinal("DataType"));
+                var value = reader.GetDecimal(reader.GetOrdinal("IndicatorValue"));
+
+                DateTime? lastEntry = null;
+                int lastEntryOrdinal = reader.GetOrdinal("LastEntryDate");
+                if (!reader.IsDBNull(lastEntryOrdinal))
+                {
+                    lastEntry = reader.GetDateTime(lastEntryOrdinal);
+                }
+
+                result.Add(new SiteAggregatedReportRow(
+                    siteIdVal,
+                    siteName,
+                    countryName,
+                    year,
+                    indicatorCode,
+                    indicatorName,
+                    dataType,
+                    lastEntry,
+                    value
+                ));
+            }
+
+            return result;
+        }
 
     }
 }
