@@ -133,6 +133,24 @@ namespace Champs.Api.Models
            DateTime? LastEntryDate,
            decimal IndicatorValue
        );
+    public record PregnancyOutcomeStackedRow(
+    int DataYear,
+    decimal LiveBirths,
+    decimal Stillbirths,
+    decimal AbortionMiscarriage
+);
+
+    public record CumulativeUnder5DeathsRow(
+    int DataYear,
+    decimal DeathsWithinFirst24Hours,
+    decimal Deaths1To6Days,
+    decimal Deaths7To29Days,
+    decimal Deaths29DaysTo11Months,
+    decimal Deaths1To2Years,
+    decimal Deaths2To3Years,
+    decimal Deaths3To4Years,
+    decimal Deaths4To5Years
+);
 
 
 }

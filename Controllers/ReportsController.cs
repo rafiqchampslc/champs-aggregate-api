@@ -167,5 +167,20 @@ namespace Champs.Api.Controllers
             return Ok(data);
         }
 
+        [HttpGet("pregnancy-outcome-stacked")]
+        public async Task<ActionResult<IEnumerable<PregnancyOutcomeStackedRow>>> GetPregnancyOutcomeStacked(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetPregnancyOutcomeStackedByYearAsync(siteId));
+        }
+
+        [HttpGet("cumulative-under5-deaths")]
+        public async Task<ActionResult<IEnumerable<CumulativeUnder5DeathsRow>>> GetCumulativeUnder5Deaths(
+    [FromQuery] int siteId)
+        {
+            return Ok(await _repo.GetCumulativeUnder5DeathsByYearAsync(siteId));
+        }
+
+
     }
 }

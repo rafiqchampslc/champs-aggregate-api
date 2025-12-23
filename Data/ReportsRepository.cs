@@ -29,6 +29,9 @@ namespace Champs.Api.Data
         Task<List<MigrationRatesPerThousandTrendRow>> GetMigrationRatesPerThousandTrendAsync(int siteId);
         Task<List<HouseholdVisitOutcomesTrendRow>> GetHouseholdVisitOutcomesTrendAsync(int siteId);
         Task<List<SiteAggregatedReportRow>> GetSiteAggregatedReportAsync(int siteId);
+        Task<List<PregnancyOutcomeStackedRow>> GetPregnancyOutcomeStackedByYearAsync(int siteId);
+        Task<List<CumulativeUnder5DeathsRow>> GetCumulativeUnder5DeathsByYearAsync(int siteId);
+
     }
 
     public class ReportsRepository : IReportsRepository
@@ -648,6 +651,61 @@ namespace Champs.Api.Data
                     dataType,
                     lastEntry,
                     value
+                ));
+            }
+
+            return result;
+        }
+
+        public async Task<List<PregnancyOutcomeStackedRow>> GetPregnancyOutcomeStackedByYearAsync(int siteId)
+        {
+            var result = new List<PregnancyOutcomeStackedRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetPregnancyOutcomeStackedByYear", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                result.Add(new PregnancyOutcomeStackedRow(
+                    reader.GetInt32(reader.GetOrdinal("DataYear")),
+                    reader.GetDecimal(reader.GetOrdinal("LiveBirths")),
+                    reader.GetDecimal(reader.GetOrdinal("Stillbirths")),
+                    reader.GetDecimal(reader.GetOrdinal("AbortionMiscarriage"))
+                ));
+            }
+
+            return result;
+        }
+
+        public async Task<List<CumulativeUnder5DeathsRow>> GetCumulativeUnder5DeathsByYearAsync(int siteId)
+        {
+            var result = new List<CumulativeUnder5DeathsRow>();
+
+            using var conn = CreateConnection();
+            using var cmd = new SqlCommand("dbo.usp_GetCumulativeUnder5DeathsByYear", conn)
+            { CommandType = CommandType.StoredProcedure };
+
+            cmd.Parameters.AddWithValue("@SiteID", siteId);
+
+            await conn.OpenAsync();
+            using var reader = await cmd.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                result.Add(new CumulativeUnder5DeathsRow(
+                    reader.GetInt32(reader.GetOrdinal("DataYear")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_WITHIN_THE_FIRST_24_HOURS")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_1_TO_6_DAYS")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_7_TO_29_DAYS")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_29_DAYS_TO_11_MONTHS")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_1_TO_2_YEARS")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_2_TO_3_YEARS")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_3_TO_4_YEARS")),
+                    reader.GetDecimal(reader.GetOrdinal("DEATHS_4_TO_5_YEARS"))
                 ));
             }
 
